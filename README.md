@@ -8,3 +8,4 @@ In this program, my full scope is only for Makassar City. For higher level, I ju
 1. Make sure Python has been installed.
 2. Create `private` folder in root. Inside of `private` folder, create `data` folder and `log` folder.
 3. Run `py main.py`.
+4. To stop the program, hit "Ctrl+C".
