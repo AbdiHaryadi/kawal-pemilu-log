@@ -103,8 +103,8 @@ def update_for_one_iteration():
 # Request-nya per 10 menit saja.
 keyboard_interrupted = False
 while not keyboard_interrupted:
-    TEN_MINUTES_INTERVAL = 10 * 60
-    time_to_wait = TEN_MINUTES_INTERVAL - (time.time() % TEN_MINUTES_INTERVAL)
+    INTERVAL_SECONDS = 10 * 60
+    time_to_wait = INTERVAL_SECONDS - (time.time() % INTERVAL_SECONDS)
 
     try:
         print(f"Wait {time_to_wait} s ....")
