@@ -101,17 +101,27 @@ def update_for_one_iteration():
     }
 
 # Request-nya per 10 menit saja.
-interval = 10 * 60
-time_to_wait = interval - (time.time() % interval)
-print(f"Wait {time_to_wait} s ....")
-time.sleep(time_to_wait)
+keyboard_interrupted = False
+while not keyboard_interrupted:
+    TEN_MINUTES_INTERVAL = 10 * 60
+    time_to_wait = TEN_MINUTES_INTERVAL - (time.time() % TEN_MINUTES_INTERVAL)
 
-print("Requesting ....")
-log = update_for_one_iteration()
-timestamp = int(time.time() // 1)
+    try:
+        print(f"Wait {time_to_wait} s ....")
+        time.sleep(time_to_wait)
+    except KeyboardInterrupt:
+        print("Keyboard interrupted.")
+        keyboard_interrupted = True
 
-print("Logging ....")
-with open(f"private/log/{timestamp}.json", mode="w") as fp:
-    json.dump(log, fp)
+    if not keyboard_interrupted:
+        print("Requesting ....")
+        log = update_for_one_iteration()
+        timestamp = int(time.time() // 1)
 
-print("Done!")
+        print("Logging ....")
+        with open(f"private/log/{timestamp}.json", mode="w") as fp:
+            json.dump(log, fp)
+
+        print("One iteration done.")
+
+print("Done gracefully~")
