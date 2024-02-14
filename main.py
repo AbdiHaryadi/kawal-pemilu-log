@@ -14,6 +14,7 @@ def update_by_id(filename, id: str = ""):
 
     successful = False
     while not successful:
+        retry_seconds = 5
         try:
             res = requests.post(
                 endpoint,
@@ -27,10 +28,11 @@ def update_by_id(filename, id: str = ""):
                 data=data
             )
             successful = True
-            
+
         except requests.exceptions.ConnectionError:
-            print(f"Request for id={id} not successful! Retrying in 5 seconds ....")
-            time.sleep(5)
+            print(f"Request for id={id} not successful! Retrying in {retry_seconds} seconds ....")
+            time.sleep(retry_seconds)
+            retry_seconds *= 2
 
     with open(filename, mode="w") as fp:
         print(res.text, file=fp)
