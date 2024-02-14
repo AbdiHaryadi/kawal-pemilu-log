@@ -12,17 +12,25 @@ def update_by_id(filename, id: str = ""):
         }
     })
 
-    res = requests.post(
-        endpoint,
-        headers={
-            "Content-Type": "application/json",
-            "User-Agent": "PythonRuntime/3.11.5",
-            "Accept": "*/*",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Connection": "keep-alive"
-        },
-        data=data
-    )
+    successful = False
+    while not successful:
+        try:
+            res = requests.post(
+                endpoint,
+                headers={
+                    "Content-Type": "application/json",
+                    "User-Agent": "PythonRuntime/3.11.5",
+                    "Accept": "*/*",
+                    "Accept-Encoding": "gzip, deflate, br",
+                    "Connection": "keep-alive"
+                },
+                data=data
+            )
+            successful = True
+            
+        except requests.exceptions.ConnectionError:
+            print(f"Request for id={id} not successful! Retrying in 5 seconds ....")
+            time.sleep(5)
 
     with open(filename, mode="w") as fp:
         print(res.text, file=fp)
