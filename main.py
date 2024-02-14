@@ -29,11 +29,11 @@ def update_by_id(filename, id: str = ""):
 
     return res.text
 
-def update_for_one_iteration():
+def update_for_one_iteration(prov_id: str, kota_id: str):
     total_requests = 0
     start_time = time.time()
 
-    # Update root
+    # Top update
     timestamp = int(time.time() // 1)
     root_dir = "private/data"
     if not os.path.exists(root_dir):
@@ -43,8 +43,7 @@ def update_for_one_iteration():
     res_text = update_by_id(filename=filename, id="")
     total_requests += 1
 
-    # Update Sulsel
-    prov_id = "73"
+    # Province update
     timestamp = int(time.time() // 1)
     prov_dir = f"{root_dir}/{prov_id}"
     if not os.path.exists(prov_dir):
@@ -54,8 +53,7 @@ def update_for_one_iteration():
     res_text = update_by_id(filename=filename, id=prov_id)
     total_requests += 1
 
-    # Update Kota Makassar
-    kota_id = "7371"
+    # City/regency update
     timestamp = int(time.time() // 1)
     kota_dir = f"{prov_dir}/{kota_id}"
     if not os.path.exists(kota_dir):
@@ -100,10 +98,16 @@ def update_for_one_iteration():
         "duration": time.time() - start_time
     }
 
-# Request-nya per 10 menit saja.
+with open("config.json") as fp:
+    config = json.load(fp)
+print("Config:\n", config)
+
+prov_id = str(config["prov_id"])
+kota_id = str(config["kota_id"])
+INTERVAL_SECONDS = int(config["interval_seconds"])
+
 keyboard_interrupted = False
 while not keyboard_interrupted:
-    INTERVAL_SECONDS = 10 * 60
     time_to_wait = INTERVAL_SECONDS - (time.time() % INTERVAL_SECONDS)
 
     try:
@@ -115,11 +119,15 @@ while not keyboard_interrupted:
 
     if not keyboard_interrupted:
         print("Requesting ....")
-        log = update_for_one_iteration()
+        log = update_for_one_iteration(prov_id, kota_id)
         timestamp = int(time.time() // 1)
 
         print("Logging ....")
-        with open(f"private/log/{timestamp}.json", mode="w") as fp:
+        log_dir = "private/log"
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
+
+        with open(f"{log_dir}/{timestamp}.json", mode="w") as fp:
             json.dump(log, fp)
 
         print("One iteration done.")
